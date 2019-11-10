@@ -238,6 +238,7 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         
         DispatchQueue.main.async {
             self.imgbtn.setImage(pickedImage, for: UIControl.State.normal)
+            self.savedate()
         }
         self.dismiss(animated: true, completion: nil)
     }
