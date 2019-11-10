@@ -1,10 +1,5 @@
 //
-//  AppDelegate.swift
-//  Vacays
-//
-//  Created by mac on 2019/11/8.
-//  Copyright © 2019 ydu1717. All rights reserved.
-//
+
 
 import UIKit
 
@@ -14,9 +9,11 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
-    var vacations : NSMutableArray?
+    var vacations : NSArray?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        loadData()
 
         let splitViewController = window!.rootViewController as! UISplitViewController
         
@@ -35,21 +32,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         splitViewController.delegate = self
         
         
-        saveDate()
-        loadData()
         return true
     }
     
     func loadData() {
-        let fruitArr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/fruit.plist")
-        print(fruitArr as Any)
+        self.vacations = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
+        
+        if self.vacations?.count ?? 0 <= 0 {
+            let model = VacationCodable.init(title:"Sky observation deck", latitude: "20.99" ,Longitude: "30.99", cost: "23", date: "October 1st", remark: "Sky glass slide", imgdata:"")
+            
+            do{
+                let data = try JSONEncoder().encode(model)
+                let json = String(data: data, encoding: .utf8)
+                
+                let array = NSArray(objects: json ?? "")
+                let filePath:String = NSHomeDirectory() + "/Documents/col.plist"
+                array.write(toFile: filePath, atomically: true)
+                
+            }catch {
+                
+            }
+        }
+        
     }
-    
-    func saveDate() {
-        let array = NSArray(objects: "apple","orange","pear","banana","watermelon")
-        let filePath:String = NSHomeDirectory() + "/Documents/fruit.plist"
-        array.write(toFile: filePath, atomically: true)
-    }
+//
+//    func saveDate() {
+//        let array = NSArray(objects: "apple","orange","pear","banana","watermelon")
+//        let filePath:String = NSHomeDirectory() + "/Documents/fruit.plist"
+//        array.write(toFile: filePath, atomically: true)
+//    }
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

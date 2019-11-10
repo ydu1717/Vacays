@@ -8,17 +8,21 @@ import UIKit
 struct VacationCodable :Codable {
     
     var title : String
-    var location : String
+    var latitude : String
+    var Longitude : String
     var cost : String
     var date : String
     var remark : String
+    var imgdata : String
     
     private enum CodingKeys : String , CodingKey {
         case title
-        case location
+        case latitude
+        case Longitude
         case cost
         case date
         case remark
+        case imgdata
     }
 }
 
@@ -26,7 +30,7 @@ class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
     var objects = [Any]()
-    var vacations : NSMutableArray?
+    var vacations : NSArray?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,16 +38,29 @@ class MasterViewController: UITableViewController {
         navigationItem.leftBarButtonItem = editButtonItem
 
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
-        navigationItem.rightBarButtonItem = addButton
+        let refreshButton = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(refreshAction))
+
+        navigationItem.rightBarButtonItems = [refreshButton,addButton]
+        
+        
+        
         if let split = splitViewController {
             let controllers = split.viewControllers
             detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+        }
+        if self.vacations?.count ?? 0 > 0 {
+            self.objects = self.vacations as! [Any]
+        }
+        if self.objects.count <= 0 {
+            self.objects = ["1"]
         }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
+        
+//        print(self.vacations as Any)
     }
 
     @objc
@@ -52,15 +69,20 @@ class MasterViewController: UITableViewController {
         let indexPath = IndexPath(row: 0, section: 0)
         tableView.insertRows(at: [indexPath], with: .automatic)
     }
+    
+    @objc
+    func refreshAction() -> Void {
+        tableView.reloadData()
+    }
 
     // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] as! NSDate
+//                let object = objects[indexPath.row] as! NSDate
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
+//                controller.detailItem = object
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
@@ -80,10 +102,24 @@ class MasterViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[indexPath.row] as! NSDate
-        cell.textLabel!.text = object.description
-        cell.detailTextLabel?.text = "sssss"
-        cell.imageView?.image = UIImage.init(named: "jia")
+        let arr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
+        let json : String = arr?[indexPath.row] as! String
+        let coordinateData = json.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        do{
+            let model = try decoder.decode(VacationCodable.self, from: coordinateData)
+            let data = NSData.init(base64Encoded: model.imgdata, options: NSData.Base64DecodingOptions.init())
+            let img : UIImage = UIImage.init(data: data! as Data) ?? UIImage.init(named: "jia")!
+            
+            cell.imageView?.image = img
+            
+            cell.textLabel!.text = model.title
+            cell.detailTextLabel?.text = model.remark
+            
+        }catch {
+            
+        }
+        
         return cell
     }
 
