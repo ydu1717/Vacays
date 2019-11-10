@@ -1,18 +1,32 @@
 //
 //  MasterViewController.swift
-//  Vacays
-//
-//  Created by mac on 2019/11/8.
-//  Copyright © 2019 ydu1717. All rights reserved.
-//
+
 
 import UIKit
+
+
+struct VacationCodable :Codable {
+    
+    var title : String
+    var location : String
+    var cost : String
+    var date : String
+    var remark : String
+    
+    private enum CodingKeys : String , CodingKey {
+        case title
+        case location
+        case cost
+        case date
+        case remark
+    }
+}
 
 class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
     var objects = [Any]()
-
+    var vacations : NSMutableArray?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +82,8 @@ class MasterViewController: UITableViewController {
 
         let object = objects[indexPath.row] as! NSDate
         cell.textLabel!.text = object.description
+        cell.detailTextLabel?.text = "sssss"
+        cell.imageView?.image = UIImage.init(named: "jia")
         return cell
     }
 

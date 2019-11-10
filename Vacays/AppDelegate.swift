@@ -9,18 +9,46 @@
 import UIKit
 
 @UIApplicationMain
+
+
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
-
+    var vacations : NSMutableArray?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
         let splitViewController = window!.rootViewController as! UISplitViewController
-        let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
-        navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
+        
+        let navigationController = splitViewController.viewControllers.first as!
+        UINavigationController
+        if let masterViewController = navigationController.topViewController as?
+            MasterViewController {
+            masterViewController.vacations = vacations
+
+        }
+        // detail
+        let detailNavController = splitViewController.viewControllers.last as!UINavigationController
+        
+        detailNavController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
+        
         splitViewController.delegate = self
+        
+        
+        saveDate()
+        loadData()
         return true
+    }
+    
+    func loadData() {
+        let fruitArr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/fruit.plist")
+        print(fruitArr as Any)
+    }
+    
+    func saveDate() {
+        let array = NSArray(objects: "apple","orange","pear","banana","watermelon")
+        let filePath:String = NSHomeDirectory() + "/Documents/fruit.plist"
+        array.write(toFile: filePath, atomically: true)
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
