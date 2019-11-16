@@ -195,6 +195,26 @@ class MasterViewController: UITableViewController {
         }
     }
 
+    //MARK :
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        
+//        super.viewWillTransition(to: size, with: coordinator)
 
+        do {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1)
+            {
+                if SCREEN_WIDTH != size.width
+                {
+                    SCREEN_WIDTH  = size.width
+                    SCREEN_HEIGHT = size.height
+                    UIView.animate(withDuration: 0.5)
+                    {
+                        
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "ChangeUINOfitication"), object: nil)
+                    }
+                }
+            }
+        }
+    }
 }
 

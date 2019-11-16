@@ -112,7 +112,7 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
     
     var starview : ScoreView?
     
-    var item : Int?
+    var item : Int = 0
 
     @objc func imgbtnClick() {
         self.imagePicker.modalPresentationStyle = .fullScreen
@@ -144,6 +144,17 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 //        configureView()
+      
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillDisappear), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeUI), name: NSNotification.Name(rawValue: "ChangeUINOfitication"), object: nil)
+
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         view.backgroundColor = UIColor.black
         self.imagePicker.delegate = self
         imagePicker.allowsEditing = true
@@ -187,7 +198,7 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         
         
         let arr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
-        let json : String = arr?[self.item!] as! String
+        let json : String = arr?[self.item] as! String
         let coordinateData = json.data(using: .utf8)!
         let decoder = JSONDecoder()
         do{
@@ -208,7 +219,7 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         }catch {
             
         }
-  
+        
         let datePicker = UIDatePicker()
         datePicker.frame = CGRect.init(x: 20, y: SCREEN_HEIGHT - 200, width: SCREEN_WIDTH - 40, height: 200)
         datePicker.tag = 1
@@ -218,10 +229,6 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         datePicker.maximumDate = Date(timeInterval:3*24*60*60,since:Date())
         self.view.addSubview(datePicker)
         datePicker.addTarget(self, action: #selector(pickchangeClick), for: .valueChanged)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillDisappear), name: UIResponder.keyboardWillHideNotification, object: nil)
         
     }
     
@@ -394,8 +401,26 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         self.dismiss(animated: true, completion: nil)
     }
     
+    @objc func changeUI()  {
+        
+        self.scroll.frame = CGRect.init(x: 0, y: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+        self.imgbtn.frame = CGRect.init(x: 0, y:CGFloat(NavigationHeight) , width:SCREEN_WIDTH , height: SCREEN_WIDTH/2)
+        self.titlelb.frame = CGRect.init(x: 20, y: CGFloat(NavigationHeight) + 5 + SCREEN_WIDTH/2, width: SCREEN_WIDTH - 40, height: 50)
+        self.addresslb.frame = CGRect.init(x: 20, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2, height: 50)
+        self.locationlb.frame = CGRect.init(x: self.addresslb.x + self.addresslb.width + 5, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/4 - 25, height: 50)
+        self.locationlb1.frame = CGRect.init(x: self.locationlb.x + self.locationlb.width, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/4 - 25, height: 50)
+        self.costlb.frame = CGRect.init(x: 20, y: self.locationlb.y + self.locationlb.height + 5, width: SCREEN_WIDTH-40, height: 50)
+        
+        self.datelb.frame = CGRect.init(x: 20, y: self.costlb.y + self.costlb.height + 5, width: SCREEN_WIDTH-40, height: 50)
+        self.starview?.frame = CGRect.init(x: 20, y: self.datelb.y + self.datelb.height + 5, width: SCREEN_WIDTH-40, height: 100)
+        self.remarklb.frame = CGRect.init(x: 20, y: self.starview!.y + self.starview!.height + 5, width: SCREEN_WIDTH-40, height: 50)
+        
+        self.scroll.contentSize = CGSize.init(width: SCREEN_WIDTH, height: self.remarklb.y + self.remarklb.height + 20)
+    }
+    
     //MARK :
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
         do {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1)
             {
