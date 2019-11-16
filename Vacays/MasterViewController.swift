@@ -76,7 +76,7 @@ class MasterViewController: UITableViewController {
 
     @objc
     func insertNewObject(_ sender: Any) {
-        let model = VacationCodable.init(title:"Sky observation deck", latitude: "20.99" ,Longitude: "30.99", address:"", cost: "23", date: "October 1st", remark: "Sky glass slide", imgdata:"" ,score: "")
+        let model = VacationCodable.init(title:"Sky observation deck", latitude: "20.99" ,Longitude: "30.99", address:"", cost: "23", date: "October 1st", remark: "Sky glass slide", imgdata:"" ,score: "0")
 
         self.vacations!.insert(model, at: 0)
         let indexPath = IndexPath(row: 0, section: 0)
@@ -148,6 +148,14 @@ class MasterViewController: UITableViewController {
             cell.textLabel!.text = model.title
             cell.detailTextLabel?.text = model.remark
             
+            
+            
+            let score = UIButton.init()
+            score.setImage(UIImage.init(named: "star_fore"), for: UIControl.State.normal)
+            score.frame = CGRect.init(x: 0, y: 0, width: 80, height: 40)
+            score.setTitle(model.score, for: UIControl.State.normal)
+            score.setTitleColor(UIColor.black, for: UIControl.State.normal)
+            cell.accessoryView = score
         }catch {
             
         }

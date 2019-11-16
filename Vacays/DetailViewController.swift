@@ -108,6 +108,10 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
     
     private var originY: CGFloat = 0
     
+    var socrestring = "0"
+    
+    var starview : ScoreView?
+    
     var item : Int?
 
     @objc func imgbtnClick() {
@@ -168,8 +172,16 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         self.scroll.addSubview(self.datelb)
         self.datelb.frame = CGRect.init(x: 20, y: self.costlb.y + self.costlb.height + 5, width: SCREEN_WIDTH-40, height: 50)
         
+        self.starview = ScoreView.init(frame: CGRect.init(x: 20, y: self.datelb.y + self.datelb.height + 5, width: SCREEN_WIDTH-40, height: 100), starCount: 8, currentStar: 2, rateStyle: .half) { (current) -> (Void) in
+            print(current)
+            self.socrestring = "\(current)"
+            self.savedate()
+        }
+        self.starview?.numberOfStar = 5
+        self.scroll.addSubview(self.starview!)
+        
         self.scroll.addSubview(self.remarklb)
-        self.remarklb.frame = CGRect.init(x: 20, y: self.datelb.y + self.datelb.height + 5, width: SCREEN_WIDTH-40, height: 50)
+        self.remarklb.frame = CGRect.init(x: 20, y: self.starview!.y + self.starview!.height + 5, width: SCREEN_WIDTH-40, height: 50)
         
         self.scroll.contentSize = CGSize.init(width: SCREEN_WIDTH, height: self.remarklb.y + self.remarklb.height + 20)
         
@@ -191,6 +203,7 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
             self.costlb.text      = model.cost
             self.datelb.setTitle(model.date, for: .normal)
             self.remarklb.text    = model.remark
+            self.starview?.selectNumberOfStar = Float(CGFloat(Double(model.score ?? "0")!))
             self.title = model.title
         }catch {
             
@@ -290,7 +303,7 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         let vaarr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
         let muarr = NSMutableArray.init(capacity: vaarr!.count)
         
-        let model = VacationCodable.init(title: self.titlelb.text ?? "", latitude: self.locationlb.text ?? "",Longitude: self.locationlb1.text ?? "",address:"", cost: self.costlb.text ?? "", date: self.datelb.titleLabel?.text ?? "", remark: self.remarklb.text ?? "", imgdata: _encodedImageStr ?? "" ,score: "")
+        let model = VacationCodable.init(title: self.titlelb.text ?? "", latitude: self.locationlb.text ?? "",Longitude: self.locationlb1.text ?? "",address:"", cost: self.costlb.text ?? "", date: self.datelb.titleLabel?.text ?? "", remark: self.remarklb.text ?? "", imgdata: _encodedImageStr ?? "" ,score: self.socrestring)
         
         do{
             for (i,item) in (vaarr?.enumerated())! {
@@ -379,6 +392,37 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
             self.savedate()
         }
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    //MARK :
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        do {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1)
+            {
+                if SCREEN_WIDTH != size.width
+                {
+                    SCREEN_WIDTH  = size.width
+                    SCREEN_HEIGHT = size.height
+                    UIView.animate(withDuration: 0.5)
+                    {
+                        self.scroll.frame = CGRect.init(x: 0, y: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
+                        self.imgbtn.frame = CGRect.init(x: 0, y:CGFloat(NavigationHeight) , width:SCREEN_WIDTH , height: SCREEN_WIDTH/2)
+                        self.titlelb.frame = CGRect.init(x: 20, y: CGFloat(NavigationHeight) + 5 + SCREEN_WIDTH/2, width: SCREEN_WIDTH - 40, height: 50)
+                        self.addresslb.frame = CGRect.init(x: 20, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2, height: 50)
+                        self.locationlb.frame = CGRect.init(x: self.addresslb.x + self.addresslb.width + 5, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/4 - 25, height: 50)
+                        self.locationlb1.frame = CGRect.init(x: self.locationlb.x + self.locationlb.width, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/4 - 25, height: 50)
+                        self.costlb.frame = CGRect.init(x: 20, y: self.locationlb.y + self.locationlb.height + 5, width: SCREEN_WIDTH-40, height: 50)
+
+                        self.datelb.frame = CGRect.init(x: 20, y: self.costlb.y + self.costlb.height + 5, width: SCREEN_WIDTH-40, height: 50)
+                        self.starview?.frame = CGRect.init(x: 20, y: self.datelb.y + self.datelb.height + 5, width: SCREEN_WIDTH-40, height: 100)
+                        self.remarklb.frame = CGRect.init(x: 20, y: self.starview!.y + self.starview!.height + 5, width: SCREEN_WIDTH-40, height: 50)
+
+                        self.scroll.contentSize = CGSize.init(width: SCREEN_WIDTH, height: self.remarklb.y + self.remarklb.height + 20)
+
+                    }
+                }
+            }
+        }
     }
 }
 

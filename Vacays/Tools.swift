@@ -4,8 +4,8 @@ import Foundation
 
 
 // MARK: -
-let SCREEN_HEIGHT = CGFloat(UIScreen.main.bounds.height)
-let SCREEN_WIDTH  = CGFloat(UIScreen.main.bounds.width)
+var SCREEN_HEIGHT = CGFloat(UIScreen.main.bounds.height)
+var SCREEN_WIDTH  = CGFloat(UIScreen.main.bounds.width)
 let StatusHeight  = UIApplication.shared.statusBarFrame.size.height
 let BottomSafeAreaHeight = UIApplication.shared.windows.first?.safeAreaInsets.bottom ?? 0.0
 let NavigationHeight = (BottomSafeAreaHeight == 0 ? 64 : 88)

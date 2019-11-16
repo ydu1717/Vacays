@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         self.vacations = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
         
         if self.vacations?.count ?? 0 <= 0 {
-            let model = VacationCodable.init(title:"Sky observation deck", latitude: "20.99" ,Longitude: "30.99", address:"", cost: "23", date: "October 1st", remark: "Sky glass slide", imgdata:"" ,score: "")
+            let model = VacationCodable.init(title:"Sky observation deck", latitude: "20.99" ,Longitude: "30.99", address:"", cost: "23", date: "October 1st", remark: "Sky glass slide", imgdata:"" ,score: "0")
             
             do{
                 let data = try JSONEncoder().encode(model)
