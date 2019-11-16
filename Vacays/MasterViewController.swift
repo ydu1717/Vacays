@@ -32,8 +32,8 @@ struct VacationCodable :Codable {
 class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
-    var objects = [Any]()
-    var vacations : NSArray?
+//    var objects = [Any]()
+    var vacations : NSMutableArray?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,26 +50,54 @@ class MasterViewController: UITableViewController {
             let controllers = split.viewControllers
             detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
         }
-        if self.vacations?.count ?? 0 > 0 {
-            self.objects = self.vacations as! [Any]
+        self.vacations = NSMutableArray.init()
+        let arr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
+        for (i,_) in (arr!.enumerated()) {
+            let json : String = arr?[i] as! String
+            let coordinateData = json.data(using: .utf8)!
+            let decoder = JSONDecoder()
+            do{
+                let model = try decoder.decode(VacationCodable.self, from: coordinateData)
+                self.vacations?.add(model)
+                
+            }catch {
+                
+            }
         }
-        if self.objects.count <= 0 {
-            self.objects = ["1"]
-        }
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
         refreshAction()
-//        print(self.vacations as Any)
+        
     }
 
     @objc
     func insertNewObject(_ sender: Any) {
-        objects.insert(NSDate(), at: 0)
+        let model = VacationCodable.init(title:"Sky observation deck", latitude: "20.99" ,Longitude: "30.99", address:"", cost: "23", date: "October 1st", remark: "Sky glass slide", imgdata:"" ,score: "")
+
+        self.vacations!.insert(model, at: 0)
         let indexPath = IndexPath(row: 0, section: 0)
         tableView.insertRows(at: [indexPath], with: .automatic)
+      
+        let jsonarr = NSMutableArray.init()
+        for (i,item) in (self.vacations?.enumerated())! {
+            do{
+                
+                let data = try JSONEncoder().encode(self.vacations![i] as!VacationCodable)
+                let json = String(data: data, encoding: .utf8)
+                jsonarr.add(json ?? "")
+                
+            }catch {
+                
+            }
+        }
+        
+        let array = NSArray.init(array: jsonarr)
+        let filePath:String = NSHomeDirectory() + "/Documents/col.plist"
+        array.write(toFile: filePath, atomically: true)
         
         
     }
@@ -87,6 +115,7 @@ class MasterViewController: UITableViewController {
 //                let object = objects[indexPath.row] as! NSDate
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
 //                controller.detailItem = object
+                controller.item = indexPath.row
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
@@ -100,7 +129,7 @@ class MasterViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return objects.count
+        return self.vacations!.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -118,11 +147,6 @@ class MasterViewController: UITableViewController {
             cell.imageView?.image = img
             cell.textLabel!.text = model.title
             cell.detailTextLabel?.text = model.remark
-//            
-//            let lb = UILabel.init()
-//            lb.backgroundColor = UIColor.red
-//            lb.frame = CGRect.init(x: SCREEN_WIDTH - 100, y: 10, width: 80, height: 30)
-//            cell.contentView.addSubview(lb)
             
         }catch {
             
@@ -138,8 +162,26 @@ class MasterViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            objects.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            self.vacations?.removeObject(at: indexPath.row)
+            self.refreshAction()
+            let jsonarr = NSMutableArray.init()
+            for (i,item) in (self.vacations?.enumerated())! {
+                do{
+                    
+                    let data = try JSONEncoder().encode(self.vacations![i] as!VacationCodable)
+                    let json = String(data: data, encoding: .utf8)
+                    jsonarr.add(json ?? "")
+                    
+                }catch {
+                    
+                }
+            }
+            
+            let array = NSArray.init(array: jsonarr)
+            let filePath:String = NSHomeDirectory() + "/Documents/col.plist"
+            array.write(toFile: filePath, atomically: true)
+            
+            
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }

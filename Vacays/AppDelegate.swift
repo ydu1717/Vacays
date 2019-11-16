@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         UINavigationController
         if let masterViewController = navigationController.topViewController as?
             MasterViewController {
-            masterViewController.vacations = vacations
+            masterViewController.vacations = NSMutableArray.init(array: vacations!)
 
         }
         // detail
@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 let array = NSArray(objects: json ?? "")
                 let filePath:String = NSHomeDirectory() + "/Documents/col.plist"
                 array.write(toFile: filePath, atomically: true)
-                
+                self.vacations = array
             }catch {
                 
             }

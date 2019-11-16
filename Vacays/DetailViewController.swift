@@ -173,8 +173,9 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         
         self.scroll.contentSize = CGSize.init(width: SCREEN_WIDTH, height: self.remarklb.y + self.remarklb.height + 20)
         
+        
         let arr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
-        let json : String = arr?.firstObject as! String
+        let json : String = arr?[self.item!] as! String
         let coordinateData = json.data(using: .utf8)!
         let decoder = JSONDecoder()
         do{
@@ -286,14 +287,23 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         let _data = self.imgbtn.currentImage?.pngData()
         let _encodedImageStr = _data?.base64EncodedString()
         
+        let vaarr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
+        let muarr = NSMutableArray.init(capacity: vaarr!.count)
+        
         let model = VacationCodable.init(title: self.titlelb.text ?? "", latitude: self.locationlb.text ?? "",Longitude: self.locationlb1.text ?? "",address:"", cost: self.costlb.text ?? "", date: self.datelb.titleLabel?.text ?? "", remark: self.remarklb.text ?? "", imgdata: _encodedImageStr ?? "" ,score: "")
         
-        
         do{
-            let data = try JSONEncoder().encode(model)
-            let json = String(data: data, encoding: .utf8)
-            
-            let array = NSArray(objects: json ?? "")
+            for (i,item) in (vaarr?.enumerated())! {
+                if i == self.item {
+                    let data = try JSONEncoder().encode(model)
+                    let json = String(data: data, encoding: .utf8)
+                    muarr.add(json as Any)
+                }else {
+                    muarr.add(item)
+                }
+            }
+            let array = NSArray.init(array: muarr)
+
             let filePath:String = NSHomeDirectory() + "/Documents/col.plist"
             array.write(toFile: filePath, atomically: true)
 
