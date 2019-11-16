@@ -10,11 +10,12 @@ struct VacationCodable :Codable {
     var title : String
     var latitude : String
     var Longitude : String
+    var address : String
     var cost : String
     var date : String
     var remark : String
     var imgdata : String
-    
+    var score    : String
     private enum CodingKeys : String , CodingKey {
         case title
         case latitude
@@ -23,6 +24,8 @@ struct VacationCodable :Codable {
         case date
         case remark
         case imgdata
+        case address
+        case score
     }
 }
 
@@ -67,6 +70,8 @@ class MasterViewController: UITableViewController {
         objects.insert(NSDate(), at: 0)
         let indexPath = IndexPath(row: 0, section: 0)
         tableView.insertRows(at: [indexPath], with: .automatic)
+        
+        
     }
     
     @objc
@@ -111,9 +116,13 @@ class MasterViewController: UITableViewController {
             let img : UIImage = UIImage.init(data: data! as Data) ?? UIImage.init(named: "jia")!
             
             cell.imageView?.image = img
-            
             cell.textLabel!.text = model.title
             cell.detailTextLabel?.text = model.remark
+//            
+//            let lb = UILabel.init()
+//            lb.backgroundColor = UIColor.red
+//            lb.frame = CGRect.init(x: SCREEN_WIDTH - 100, y: 10, width: 80, height: 30)
+//            cell.contentView.addSubview(lb)
             
         }catch {
             

@@ -1,6 +1,7 @@
 
 
 import UIKit
+import CoreLocation
 
 class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate {
 
@@ -36,27 +37,36 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         return lb
     }()
     
-    private lazy var locationlb : UITextField = {
-        let lb = UITextField.init()
+    private lazy var locationlb : UILabel = {
+        let lb = UILabel.init()
         lb.textAlignment = NSTextAlignment.center
-        lb.delegate = self
-        lb.placeholder = "longitude"
+//        lb.delegate = self
+//        lb.placeholder = "longitude"
         lb.backgroundColor = UIColor.lightGray
-        lb.returnKeyType = UIReturnKeyType.done
-        lb.inputAccessoryView = self.tool
+//        lb.returnKeyType = UIReturnKeyType.done
+//        lb.inputAccessoryView = self.tool
+//        lb.isEditing = false
+        return lb
+    }()
+    
+    private lazy var locationlb1 : UILabel = {
+        let lb = UILabel.init()
+        lb.textAlignment = NSTextAlignment.center
+//        lb.delegate = self
+//        lb.placeholder = "latitude"
+        lb.backgroundColor = UIColor.lightGray
+//        lb.returnKeyType = UIReturnKeyType.done
+//        lb.inputAccessoryView = self.tool
+//        lb.isEditing = false
 
         return lb
     }()
     
-    private lazy var locationlb1 : UITextField = {
-        let lb = UITextField.init()
-        lb.textAlignment = NSTextAlignment.center
-        lb.delegate = self
-        lb.placeholder = "latitude"
+    private lazy var addresslb : UIButton = {
+        let lb = UIButton.init()
         lb.backgroundColor = UIColor.lightGray
-        lb.returnKeyType = UIReturnKeyType.done
-        lb.inputAccessoryView = self.tool
-
+        lb.setTitleColor(UIColor.black, for: UIControl.State.normal)
+        lb.addTarget(self, action: #selector(addressClick), for: UIControl.Event.touchUpInside)
         return lb
     }()
     
@@ -143,11 +153,14 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         self.scroll.addSubview(self.titlelb)
         self.titlelb.frame = CGRect.init(x: 20, y: CGFloat(NavigationHeight) + 5 + SCREEN_WIDTH/2, width: SCREEN_WIDTH - 40, height: 50)
         
+        self.scroll.addSubview(self.addresslb)
+        self.addresslb.frame = CGRect.init(x: 20, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2, height: 50)
+        
         self.scroll.addSubview(self.locationlb)
-        self.locationlb.frame = CGRect.init(x: 20, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2 - 20, height: 50)
+        self.locationlb.frame = CGRect.init(x: self.addresslb.x + self.addresslb.width + 5, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/4 - 25, height: 50)
         
         self.scroll.addSubview(self.locationlb1)
-        self.locationlb1.frame = CGRect.init(x: SCREEN_WIDTH/2, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2 - 20, height: 50)
+        self.locationlb1.frame = CGRect.init(x: self.locationlb.x + self.locationlb.width, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/4 - 25, height: 50)
         
         self.scroll.addSubview(self.costlb)
         self.costlb.frame = CGRect.init(x: 20, y: self.locationlb.y + self.locationlb.height + 5, width: SCREEN_WIDTH-40, height: 50)
@@ -171,6 +184,7 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
             
             self.imgbtn.setImage(img, for: UIControl.State.normal)
             self.titlelb.text     = model.title
+            self.addresslb.setTitle(model.address, for: UIControl.State.normal)
             self.locationlb.text  = model.latitude
             self.locationlb1.text = model.Longitude
             self.costlb.text      = model.cost
@@ -194,6 +208,41 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillDisappear), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+    }
+    
+    @objc func addressClick() {
+        let alert = UIAlertController.init(title: "Please enter the address", message: nil, preferredStyle: UIAlertController.Style.alert)
+        alert.addTextField { (tf) in
+            tf.placeholder = "Please enter the address"
+        }
+        
+        alert.addAction(UIAlertAction.init(title: "Cancel", style: UIAlertAction.Style.cancel, handler: { (action) in
+            
+        }))
+        alert.addAction(UIAlertAction.init(title: "OK", style: UIAlertAction.Style.default, handler: { (action) in
+            let tf : UITextField = (alert.textFields?.first!)!
+            self.addresslb.setTitle(tf.text ?? "", for: UIControl.State.normal)
+            let geocoder = CLGeocoder()
+            geocoder.geocodeAddressString(tf.text ?? "", completionHandler: { (placeMarks, error) in
+                if  (error != nil || (placeMarks?.count == 0)) {
+
+                }else{
+//                    for placeMark in placeMarks!{
+//                        print("name = \(placeMark.name ?? ""),country = \(placeMark.locality),postalCode = \(placeMark.postalCode),ISOcountryCode = \(placeMark.isoCountryCode)")
+//                    }
+                    let firstPlaceMark = placeMarks!.first
+                    if let location = firstPlaceMark!.location?.coordinate{
+                        self.locationlb.text = "\(location.latitude)"
+                        self.locationlb1.text = "\(location.longitude)"
+                    }
+                    self.savedate()
+                }
+            })
+        }))
+        self.present(alert, animated: true) {
+            
+        }
         
     }
     
@@ -237,7 +286,8 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         let _data = self.imgbtn.currentImage?.pngData()
         let _encodedImageStr = _data?.base64EncodedString()
         
-        let model = VacationCodable.init(title: self.titlelb.text ?? "", latitude: self.locationlb.text ?? "",Longitude: self.locationlb1.text ?? "", cost: self.costlb.text ?? "", date: self.datelb.titleLabel?.text ?? "", remark: self.remarklb.text ?? "", imgdata: _encodedImageStr ?? "")
+        let model = VacationCodable.init(title: self.titlelb.text ?? "", latitude: self.locationlb.text ?? "",Longitude: self.locationlb1.text ?? "",address:"", cost: self.costlb.text ?? "", date: self.datelb.titleLabel?.text ?? "", remark: self.remarklb.text ?? "", imgdata: _encodedImageStr ?? "" ,score: "")
+        
         
         do{
             let data = try JSONEncoder().encode(model)

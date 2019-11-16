@@ -13,6 +13,7 @@
 		049346FF2375999700B3F003 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 049346FD2375999700B3F003 /* Main.storyboard */; };
 		049347012375999800B3F003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 049347002375999800B3F003 /* Assets.xcassets */; };
 		049347042375999800B3F003 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 049347022375999800B3F003 /* LaunchScreen.storyboard */; };
+		04B40896237F85D90005725F /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B40895237F85D90005725F /* ScoreView.swift */; };
 		04CBAEDB2377C39E005CDFEE /* Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CBAEDA2377C39E005CDFEE /* Tools.swift */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,7 @@
 		049347002375999800B3F003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		049347032375999800B3F003 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		049347052375999800B3F003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		04B40895237F85D90005725F /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
 		04CBAEDA2377C39E005CDFEE /* Tools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tools.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -62,6 +64,7 @@
 				049346F72375999700B3F003 /* AppDelegate.swift */,
 				049346F92375999700B3F003 /* MasterViewController.swift */,
 				049346FB2375999700B3F003 /* DetailViewController.swift */,
+				04B40895237F85D90005725F /* ScoreView.swift */,
 				049346FD2375999700B3F003 /* Main.storyboard */,
 				049347002375999800B3F003 /* Assets.xcassets */,
 				049347022375999800B3F003 /* LaunchScreen.storyboard */,
@@ -145,6 +148,7 @@
 				049346FA2375999700B3F003 /* MasterViewController.swift in Sources */,
 				049346F82375999700B3F003 /* AppDelegate.swift in Sources */,
 				04CBAEDB2377C39E005CDFEE /* Tools.swift in Sources */,
+				04B40896237F85D90005725F /* ScoreView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,14 +295,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9KKRV2XV7L;
 				INFOPLIST_FILE = Vacays/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.vacays.www.Vacays;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vacays.www.Vacays.wxc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -311,14 +316,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9KKRV2XV7L;
 				INFOPLIST_FILE = Vacays/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.vacays.www.Vacays;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vacays.www.Vacays.wxc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
