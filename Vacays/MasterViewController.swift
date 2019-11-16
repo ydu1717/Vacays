@@ -36,13 +36,12 @@ class MasterViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         navigationItem.leftBarButtonItem = editButtonItem
+        self.tableView.tableFooterView = UIView.init()
 
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
         let refreshButton = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(refreshAction))
 
         navigationItem.rightBarButtonItems = [refreshButton,addButton]
-        
-        
         
         if let split = splitViewController {
             let controllers = split.viewControllers

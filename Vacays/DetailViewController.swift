@@ -11,14 +11,28 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
     private lazy var imgbtn : UIButton = {
         let img = UIButton.init()
         img.imageView?.contentMode = .scaleAspectFill
+        img.backgroundColor = UIColor.gray
         img.addTarget(self, action: #selector(imgbtnClick), for: UIControl.Event.touchUpInside)
         return img
+    }()
+    
+    private lazy var tool : UIToolbar = {
+        let toolbar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0,  width: self.view.frame.size.width, height: 30))
+        let flexSpace = UIBarButtonItem(barButtonSystemItem:    .flexibleSpace, target: nil, action: nil)
+        let doneBtn: UIBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonAction))
+        toolbar.setItems([flexSpace, doneBtn], animated: false)
+        toolbar.sizeToFit()
+        return toolbar
     }()
     
     private lazy var titlelb : UITextField = {
         let lb = UITextField.init()
         lb.textAlignment = NSTextAlignment.center
         lb.delegate = self
+        lb.backgroundColor = UIColor.lightGray
+        lb.returnKeyType = UIReturnKeyType.done
+        
+        lb.inputAccessoryView = self.tool
         return lb
     }()
     
@@ -26,7 +40,10 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         let lb = UITextField.init()
         lb.textAlignment = NSTextAlignment.center
         lb.delegate = self
-        lb.placeholder = "Please enter the longitude"
+        lb.placeholder = "longitude"
+        lb.backgroundColor = UIColor.lightGray
+        lb.returnKeyType = UIReturnKeyType.done
+        lb.inputAccessoryView = self.tool
 
         return lb
     }()
@@ -35,7 +52,11 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         let lb = UITextField.init()
         lb.textAlignment = NSTextAlignment.center
         lb.delegate = self
-        lb.placeholder = "Please enter latitude"
+        lb.placeholder = "latitude"
+        lb.backgroundColor = UIColor.lightGray
+        lb.returnKeyType = UIReturnKeyType.done
+        lb.inputAccessoryView = self.tool
+
         return lb
     }()
     
@@ -43,12 +64,17 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         let lb = UITextField.init()
         lb.textAlignment = NSTextAlignment.center
         lb.delegate = self
+        lb.backgroundColor = UIColor.lightGray
+        lb.textColor = UIColor.brown
+        lb.returnKeyType = UIReturnKeyType.done
+        lb.inputAccessoryView = self.tool
 
         return lb
     }()
     
     private lazy var datelb : UIButton = {
         let lb = UIButton.init()
+        lb.backgroundColor = UIColor.lightGray
         lb.setTitleColor(UIColor.black, for: UIControl.State.normal)
         lb.addTarget(self, action: #selector(pickClick), for: UIControl.Event.touchUpInside)
         return lb
@@ -58,8 +84,19 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         let lb = UITextView.init()
         lb.textAlignment = NSTextAlignment.center
         lb.delegate = self
+        lb.backgroundColor = UIColor.lightGray
+        lb.inputAccessoryView = self.tool
+
         return lb
     }()
+    
+    private lazy var scroll : UIScrollView = {
+        let scroll = UIScrollView.init()
+//        scroll.
+        return scroll
+    }()
+    
+    private var originY: CGFloat = 0
     
     var item : Int?
 
@@ -93,29 +130,35 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 //        configureView()
+        view.backgroundColor = UIColor.black
         self.imagePicker.delegate = self
         imagePicker.allowsEditing = true
         
-        view.addSubview(self.imgbtn)
-        self.imgbtn.frame = CGRect.init(x: 0, y:CGFloat(NavigationHeight) , width:SCREEN_WIDTH , height: SCREEN_WIDTH)
+        view.addSubview(self.scroll)
+        self.scroll.frame = CGRect.init(x: 0, y: 0, width: SCREEN_WIDTH, height: SCREEN_HEIGHT)
         
-        view.addSubview(self.titlelb)
-        self.titlelb.frame = CGRect.init(x: 0, y: CGFloat(NavigationHeight) + 5 + SCREEN_WIDTH, width: SCREEN_WIDTH, height: 20)
+        self.scroll.addSubview(self.imgbtn)
+        self.imgbtn.frame = CGRect.init(x: 0, y:CGFloat(NavigationHeight) , width:SCREEN_WIDTH , height: SCREEN_WIDTH/2)
         
-        view.addSubview(self.locationlb)
-        self.locationlb.frame = CGRect.init(x: 0, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2, height: 20)
+        self.scroll.addSubview(self.titlelb)
+        self.titlelb.frame = CGRect.init(x: 20, y: CGFloat(NavigationHeight) + 5 + SCREEN_WIDTH/2, width: SCREEN_WIDTH - 40, height: 50)
         
-        view.addSubview(self.locationlb1)
-        self.locationlb1.frame = CGRect.init(x: SCREEN_WIDTH/2, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2, height: 20)
+        self.scroll.addSubview(self.locationlb)
+        self.locationlb.frame = CGRect.init(x: 20, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2 - 20, height: 50)
         
-        view.addSubview(self.costlb)
-        self.costlb.frame = CGRect.init(x: 0, y: self.locationlb.y + self.locationlb.height + 5, width: SCREEN_WIDTH, height: 20)
+        self.scroll.addSubview(self.locationlb1)
+        self.locationlb1.frame = CGRect.init(x: SCREEN_WIDTH/2, y: self.titlelb.y + self.titlelb.height + 5, width: SCREEN_WIDTH/2 - 20, height: 50)
         
-        view.addSubview(self.datelb)
-        self.datelb.frame = CGRect.init(x: 0, y: self.costlb.y + self.costlb.height + 5, width: SCREEN_WIDTH, height: 20)
+        self.scroll.addSubview(self.costlb)
+        self.costlb.frame = CGRect.init(x: 20, y: self.locationlb.y + self.locationlb.height + 5, width: SCREEN_WIDTH-40, height: 50)
         
-        view.addSubview(self.remarklb)
-        self.remarklb.frame = CGRect.init(x: 0, y: self.datelb.y + self.datelb.height + 5, width: SCREEN_WIDTH, height: 50)
+        self.scroll.addSubview(self.datelb)
+        self.datelb.frame = CGRect.init(x: 20, y: self.costlb.y + self.costlb.height + 5, width: SCREEN_WIDTH-40, height: 50)
+        
+        self.scroll.addSubview(self.remarklb)
+        self.remarklb.frame = CGRect.init(x: 20, y: self.datelb.y + self.datelb.height + 5, width: SCREEN_WIDTH-40, height: 50)
+        
+        self.scroll.contentSize = CGSize.init(width: SCREEN_WIDTH, height: self.remarklb.y + self.remarklb.height + 20)
         
         let arr = NSArray(contentsOfFile: NSHomeDirectory() + "/Documents/col.plist")
         let json : String = arr?.firstObject as! String
@@ -127,18 +170,19 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
             let img : UIImage = UIImage.init(data: data! as Data) ?? UIImage.init(named: "jia")!
             
             self.imgbtn.setImage(img, for: UIControl.State.normal)
-            self.titlelb.text    = model.title
-            self.locationlb.text = model.latitude
+            self.titlelb.text     = model.title
+            self.locationlb.text  = model.latitude
             self.locationlb1.text = model.Longitude
-            self.costlb.text     = model.cost
+            self.costlb.text      = model.cost
             self.datelb.setTitle(model.date, for: .normal)
-            self.remarklb.text   = model.remark
+            self.remarklb.text    = model.remark
+            self.title = model.title
         }catch {
             
         }
   
         let datePicker = UIDatePicker()
-        datePicker.center = self.view.center
+        datePicker.frame = CGRect.init(x: 20, y: SCREEN_HEIGHT - 200, width: SCREEN_WIDTH - 40, height: 200)
         datePicker.tag = 1
         datePicker.isHidden = true
         datePicker.backgroundColor = UIColor.white
@@ -146,7 +190,30 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
         datePicker.maximumDate = Date(timeInterval:3*24*60*60,since:Date())
         self.view.addSubview(datePicker)
         datePicker.addTarget(self, action: #selector(pickchangeClick), for: .valueChanged)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillDisappear), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
     }
+    
+    @objc func keyboardWillAppear(notification: NSNotification) {
+
+        let keyboardinfo = notification.userInfo![UIResponder.keyboardFrameBeginUserInfoKey]
+        let keyboardheight:CGFloat = (keyboardinfo as AnyObject).cgRectValue.size.height
+       
+        UIView.animate(withDuration: 0.3) {
+            self.view.transform = CGAffineTransform(translationX: 0, y: -keyboardheight)
+        }
+    }
+    
+     @objc func keyboardWillDisappear(notification:NSNotification){
+
+        UIView.animate(withDuration: 0.3) {
+            self.view.transform = CGAffineTransform(translationX: 0, y: 0)
+        }
+    }
+    
     
     @objc func pickClick() {
         let datePicker = self.view.viewWithTag(1)as! UIDatePicker
@@ -186,17 +253,17 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        UIView.animate(withDuration: 0.3) {
-            self.view.transform = CGAffineTransform(translationX: 0, y: -SCREEN_HEIGHT/2)
-        }
+//        UIView.animate(withDuration: 0.3) {
+//            self.view.transform = CGAffineTransform(translationX: 0, y: -SCREEN_HEIGHT/2)
+//        }
         let datePicker = self.view.viewWithTag(1)as! UIDatePicker
         datePicker.isHidden = true
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        UIView.animate(withDuration: 0.3) {
-            self.view.transform = CGAffineTransform(translationX: 0, y: 0)
-        }
+//        UIView.animate(withDuration: 0.3) {
+//            self.view.transform = CGAffineTransform(translationX: 0, y: 0)
+//        }
         savedate()
         let datePicker = self.view.viewWithTag(1)as! UIDatePicker
         datePicker.isHidden = true
@@ -204,17 +271,17 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
     
     func textViewDidBeginEditing(_ textView: UITextView) {
 
-        UIView.animate(withDuration: 0.3) {
-            self.view.transform = CGAffineTransform(translationX: 0, y: -SCREEN_HEIGHT/2)
-        }
+//        UIView.animate(withDuration: 0.3) {
+//            self.view.transform = CGAffineTransform(translationX: 0, y: -SCREEN_HEIGHT/2)
+//        }
         let datePicker = self.view.viewWithTag(1)as! UIDatePicker
         datePicker.isHidden = true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        UIView.animate(withDuration: 0.3) {
-            self.view.transform = CGAffineTransform(translationX: 0, y: 0)
-        }
+//        UIView.animate(withDuration: 0.3) {
+//            self.view.transform = CGAffineTransform(translationX: 0, y: 0)
+//        }
         savedate()
         let datePicker = self.view.viewWithTag(1)as! UIDatePicker
         datePicker.isHidden = true
@@ -222,13 +289,24 @@ class DetailViewController: UIViewController,UITextViewDelegate,UITextFieldDeleg
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.remarklb.resignFirstResponder()
+        self.titlelb.resignFirstResponder()
+        self.locationlb.resignFirstResponder()
+        self.locationlb1.resignFirstResponder()
+        self.costlb.resignFirstResponder()
+    }
+    
+    @objc func doneButtonAction() {
+        self.remarklb.resignFirstResponder()
+        self.titlelb.resignFirstResponder()
+        self.locationlb.resignFirstResponder()
+        self.locationlb1.resignFirstResponder()
+        self.costlb.resignFirstResponder()
     }
     
 
     var detailItem: NSDate? {
         didSet {
-            // Update the view.
-//            configureView()
+
         }
     }
     
